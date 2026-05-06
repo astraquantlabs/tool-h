@@ -2,80 +2,36 @@
 <html>
 <head>
 <title>TOOL-H PRO MAX</title>
-
-<style>
-body {
-  background: black;
-  color: #00ffcc;
-  font-family: monospace;
-}
-
-input, button {
-  padding: 10px;
-  margin: 5px;
-}
-
-button {
-  background: #00ffcc;
-  border: none;
-}
-
-h2 {
-  text-shadow: 0 0 10px #00ffcc;
-}
-</style>
-
+<link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
-<h2>🌑 TOOL-H PRO MAX</h2>
+<h1>🚀 TOOL-H PRO MAX</h1>
 
-<h3>AI Assistant</h3>
-<input id="ai_input" placeholder="Ask AI..." />
-<button onclick="askAI()">Send</button>
-<div id="ai_output"></div>
+<h2>💻 System Info</h2>
+<pre>{{ system }}</pre>
 
-<h3>Network Scan</h3>
-<input id="target" placeholder="Enter IP (e.g. 192.168.1.1)" />
-<button onclick="scan()">Scan</button>
-<pre id="output"></pre>
+<h2>📡 Network Devices</h2>
+<ul>
+{% for d in devices %}
+<li>{{ d.ip }} - {{ d.status }}</li>
+{% endfor %}
+</ul>
 
-<h3>Network Visualization</h3>
-<button onclick="visualize()">Generate Map</button><br>
-<img src="/static/network.png" width="300"/>
+<h2>🧠 AI Assistant</h2>
+<form method="post">
+<input name="query" placeholder="Ask AI">
+<button>Ask</button>
+</form>
+<p>{{ ai }}</p>
 
-<script>
-async function askAI(){
-  let msg = document.getElementById("ai_input").value;
-
-  let res = await fetch("/ai", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({msg})
-  });
-
-  let data = await res.json();
-  document.getElementById("ai_output").innerText = data.reply;
-}
-
-async function scan(){
-  let target = document.getElementById("target").value;
-
-  let res = await fetch("/scan", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({target})
-  });
-
-  let data = await res.json();
-  document.getElementById("output").innerText = data.result;
-}
-
-async function visualize(){
-  await fetch("/visualize");
-  location.reload();
-}
-</script>
+<h2>🔐 Password Checker</h2>
+<form method="post">
+<input name="password" placeholder="Enter password">
+<button>Check</button>
+</form>
+<p>{{ password }}</p>
 
 </body>
 </html>
