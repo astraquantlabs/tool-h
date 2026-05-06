@@ -1,32 +1,37 @@
-from flask import Flask, render_template, request, jsonify
-from scanner import scan
-from ai import ai_reply
-from visualizer import draw_network
-from logger import log
+from flask import Flask, render_template, request
+from scanner import scan_network
+from ai import ask_ai
+from security import check_password
+from system_info import get_system
+from report import save_report
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html")
+    devices = scan_network()
+    system = get_system()
 
-@app.route("/scan", methods=["POST"])
-def do_scan():
-    target = request.json["target"]
-    log(f"Scan started on {target}")
-    result = scan(target)
-    return jsonify({"result": result})
+    ai_response = ""
+    password_result = ""
 
-@app.route("/ai", methods=["POST"])
-def ai():
-    msg = request.json["msg"]
-    reply = ai_reply(msg)
-    return jsonify({"reply": reply})
+    if request.method == "POST":
+        query = request.form.get("query")
+        password = request.form.get("password")
 
-@app.route("/visualize")
-def visualize():
-    draw_network()
-    return {"status": "Network map generated"}
+        if query:
+            ai_response = ask_ai(query)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+        if password:
+            password_result = check_password(password)
+
+    # Save report
+    save_report({"devices": devices, "system": system})
+
+    return render_template("index.html",
+                           devices=devices,
+                           system=system,
+                           ai=ai_response,
+                           password=password_result)
+
+app.run(host="0.0.0.0", port=5000)
