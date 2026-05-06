@@ -1,19 +1,13 @@
-import os
-import datetime
+def ask_ai(query):
+    query = query.lower()
 
-def ai_reply(msg):
-    msg = msg.lower()
+    if "port" in query:
+        return "Ports are communication endpoints. Open ports may expose services."
 
-    if "time" in msg:
-        return str(datetime.datetime.now())
+    elif "secure" in query:
+        return "Use strong passwords, firewall, and avoid public WiFi."
 
-    if "scan" in msg:
-        return "Use the scan section to analyze a target IP."
+    elif "scan" in query:
+        return "Scanning helps detect devices in your network."
 
-    if "network" in msg:
-        return "You can generate a network visualization."
-
-    if os.getenv("API_KEY"):
-        return "Real AI will be connected here later."
-
-    return "AstraQuant AI: I am running in local mode."
+    return "Tool-H AI: Ask about networks or security."
