@@ -1,16 +1,16 @@
-import os
-import datetime
+import nmap
 
-def scan(target):
-    result = os.popen(f"nmap -sV {target}").read()
+def scan_network():
+    nm = nmap.PortScanner()
+    network_range = "192.168.1.0/24"
 
-    if not os.path.exists("reports"):
-        os.makedirs("reports")
+    nm.scan(hosts=network_range, arguments='-sn')
 
-    filename = f"reports/{target}.txt"
+    devices = []
+    for host in nm.all_hosts():
+        devices.append({
+            "ip": host,
+            "status": nm[host].state()
+        })
 
-    with open(filename, "w") as f:
-        f.write(f"Scan Report for {target}\n")
-        f.write(result)
-
-    return result
+    return devices
